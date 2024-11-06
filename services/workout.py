@@ -1,6 +1,6 @@
 import random
 import time
-from main import BaseService
+from services.main import BaseService
 
 class WorkoutService(BaseService):
     def __init__(self):

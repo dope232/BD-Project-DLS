@@ -1,1 +1,9 @@
+
 schedule==1.2.2
+avro-python3==1.10.2
+uuid==1.30
+python-json-logger==2.0.7
+structlog==23.1.0
+confluent-kafka==2.3.0
+colorama==0.4.6
+python-dateutil==2.8.2

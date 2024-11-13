@@ -52,7 +52,7 @@ class GoalsService(BaseService):
         if goal_streak>0:
             self.log_event("INFO",f"Current Streak: {goal_streak}")
         elif goal_streak==0:
-            self.log_event("WARNING","Goal Streak Reset")
+            self.log_event("WARN","Goal Streak Reset")
 
 
     def run_logs(self):

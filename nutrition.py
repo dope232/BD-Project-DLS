@@ -82,6 +82,10 @@ class NutritionService(BaseService):
         else:
             self.log_event("INFO", "Intermittent fasting toggled")
 
+
+    def send_heartbeat(self):
+        return super().send_heartbeat()
+
     
 
     def run_logs(self):
@@ -95,12 +99,16 @@ class NutritionService(BaseService):
             time.sleep(5)
 
 
-
 if __name__ == "__main__":
     nutrition = NutritionService()
-    nutrition.run_logs()
+    try:
+        nutrition.run_logs()
+    except KeyboardInterrupt:
+        nutrition.send_heartbeat()
+
 
 
 
     
 
+#23625786-e27e-41cd-9471-fdbf8c2523d7

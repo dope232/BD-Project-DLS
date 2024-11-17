@@ -112,18 +112,33 @@ class ServiceMonitor:
             if 'record' in record:
                 record = record['record']
 
+            message_type = record.get('message_type')
+            service_name = record.get('service_name')
+            node_id = record.get('node_id')
+
+            if not service_name or not node_id:
+                return
+            
+            with self.lock:
+                if message_type == "REGISTRATION":
+                    self.services[service_name] = {
+                        'node_id': node_id,
+                        'last_heartbeat': datetime.now(),
+                        'status': 'UP'
+                    }
+                elif message_type == "HEARTBEAT":
+                    # ONLY update heartbeat for registered services
+                    if service_name in self.services:
+                        self.services[service_name]['last_heartbeat'] = datetime.now()
+                        # print(f"Received heartbeat from {service_name} ({node_id})")
+                else:
+                    # print(f"ALERT Heartbeat from unregistered service: {service_name}")
+                    pass
+
+
+
             # Only  heartbeat 
-            if record.get('message_type') == 'HEARTBEAT':
-                service_name = record.get('service_name')
-                node_id = record.get('node_id')
-                
-                if service_name and node_id:
-                    with self.lock:
-                        self.services[service_name] = {
-                            'node_id': node_id,
-                            'last_heartbeat': datetime.now(),
-                            'status': 'UP'
-                        }
+            
 
         except Exception as e:
             print(f"Error processing message: {e}")

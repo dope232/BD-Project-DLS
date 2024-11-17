@@ -92,7 +92,7 @@ class LogConsumer:
                 loglevel_colour = "\033[91m" if document['log_level'] == 'ERROR' else "\033[93m"
                 print(f"\nTimestamp: {document.get('timestamp')}")
                 print(f"Service: {document.get('service_name', 'unknown')}")
-                print(f"Level: {loglevel_colour}{document.get('log_level', 'unknown')}")
+                print(f"Level: {loglevel_colour}{document.get('log_level', 'unknown')}\033[0m")
                 print(f"Message: {document.get('message', 'N/A')}")
                 if 'error_details' in document:
                     print(f"Error Details: {document['error_details']}")

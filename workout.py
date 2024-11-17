@@ -1,10 +1,20 @@
 import random
 import time
 from main import BaseService
+from datetime import datetime
 
 class WorkoutService(BaseService):
     def __init__(self):
         super().__init__("WorkoutService")
+    def send_registration_log(self):
+        registration_log = {
+            "node_id": self.node_id,
+            "message_type": "REGISTRATION",
+            "service_name": self.service_name,  
+            "timestamp": datetime.utcnow().isoformat()  
+        }
+
+        self.log_event("INFO", "Service registered", registration_log)
 
     def log_exercise_tracking(self):
         # Randomly decide to log an ERROR for tracking failure
@@ -54,7 +64,7 @@ class WorkoutService(BaseService):
             self.log_event("INFO", "New personal record achieved")
 
     def run_logs(self):
-        # Call each log method at intervals for testing
+        self.send_registration_log()
         while True:
             self.log_exercise_tracking()
             self.log_set_completion()

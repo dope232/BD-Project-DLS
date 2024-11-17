@@ -2,9 +2,19 @@ import random
 from main import BaseService
 import time
 import schedule
+from datetime import datetime
 class UserManagementService(BaseService):
     def __init__(self):
         super().__init__("UserManagementService")
+    def send_registration_log(self):
+        registration_log = {
+            "node_id": self.node_id,
+            "message_type": "REGISTRATION",
+            "service_name": self.service_name,  
+            "timestamp": datetime.utcnow().isoformat()  
+        }
+
+        self.log_event("INFO", "Service registered", registration_log)
 
     def create_user(self, username):
         # Randomly simulate a successful or failed user creation
@@ -79,7 +89,7 @@ class UserManagementService(BaseService):
                 self.update_user_credentials(username, {"password": "new_hashed_password"})
 
     def run_service(self):
-        # Run heartbeat and user operations for testing
+        self.send_registration_log()
         while True:
             schedule.run_pending()  # Handle scheduled heartbeats
             self.simulate_user_operations()  # Execute user operations with logs

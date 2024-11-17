@@ -1,13 +1,22 @@
 import random 
 import time 
 from main import BaseService
-
+from datetime import datetime
 
 
 class NutritionService(BaseService):
     def __init__(self):
         super().__init__("NutritionService")
 
+    def send_registration_log(self):
+        registration_log = {
+            "node_id": self.node_id,
+            "message_type": "REGISTRATION",
+            "service_name": self.service_name,  
+            "timestamp": datetime.utcnow().isoformat()  
+        }
+
+        self.log_event("INFO", "Service registered", registration_log)
 
 
     def calorie_logged(self):
@@ -89,6 +98,8 @@ class NutritionService(BaseService):
     
 
     def run_logs(self):
+        self.send_registration_log()
+
         while True:
             self.calorie_logged()
             self.tracking_meal()

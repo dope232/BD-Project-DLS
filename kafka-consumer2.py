@@ -11,8 +11,8 @@ from collections import defaultdict
 warnings.filterwarnings("ignore")
 
 class ServiceMonitor:
-    def __init__(self, kafka_servers='localhost:9092', 
-                 elastic_host='http://localhost:9200',
+    def __init__(self, kafka_servers='192.168.29.60:9092', 
+                 elastic_host='http://192.168.29.60:9200',
                  kafka_topic='fitness_logs'):
         
         
@@ -112,21 +112,33 @@ class ServiceMonitor:
             if 'record' in record:
                 record = record['record']
 
-            # Only  heartbeat 
-            if record.get('message_type') == 'HEARTBEAT':
-                service_name = record.get('service_name')
-                node_id = record.get('node_id')
-                
-                if service_name and node_id:
-                    with self.lock:
-                        self.services[service_name] = {
-                            'node_id': node_id,
-                            'last_heartbeat': datetime.now(),
-                            'status': 'UP'
-                        }
+            message_type = record.get('message_type')
+            service_name = record.get('service_name')
+            node_id = record.get('node_id')
+
+            if not service_name or not node_id:
+                return
+
+            with self.lock:
+                if message_type == 'REGISTRATION':
+                    # Register the service with initial details
+                    self.services[service_name] = {
+                        'node_id': node_id,
+                        'last_heartbeat': datetime.now(),
+                        'status': 'UP'
+                    }
+                    print(f"\n✅ Service {service_name} registered successfully.")
+                elif message_type == 'HEARTBEAT':
+                    # Only update heartbeat if service is already registered
+                    if service_name in self.services:
+                        self.services[service_name]['last_heartbeat'] = datetime.now()
+                        print(f"Heartbeat updated for {service_name}")
+                    else:
+                        print(f"⚠️  Heartbeat received for unregistered service: {service_name}")
 
         except Exception as e:
             print(f"Error processing message: {e}")
+
 
     def start_monitoring(self):
         print("Service monitor started - monitoring service health...")
@@ -140,8 +152,8 @@ class ServiceMonitor:
 
 def main():
     monitor = ServiceMonitor(
-        kafka_servers='localhost:9092',
-        elastic_host='http://localhost:9200',
+        kafka_servers='192.168.29.60:9092',
+        elastic_host='http://192.168.29.60:9200',
         kafka_topic='fitness_logs'
     )
     monitor.start_monitoring()

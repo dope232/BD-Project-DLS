@@ -1,10 +1,22 @@
 import random
 import time
 from main import BaseService
+from datetime import datetime
+
 
 class GoalsService(BaseService):
     def __init__(self):
         super().__init__("GoalsService")
+
+
+    def send_registration_log(self):
+        registration_log = {
+            "node_id": self.node_id,
+            "message_type": "REGISTRATION",
+            "service_name": self.service_name,
+            "timestamp": datetime.now().isoformat(),
+        }
+        self.log_event("INFO", "Service registered", registration_log)
 
     def goals_settings(self):
         goal_months=random.randrange(1,12)
@@ -56,6 +68,7 @@ class GoalsService(BaseService):
 
 
     def run_logs(self):
+        self.send_registration_log()
         while True:
             self.goals_settings()
             self.progress_updates()

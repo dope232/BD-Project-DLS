@@ -62,6 +62,8 @@ class LogConsumer:
             # skip heartbeat 
             if record.get('message_type') == 'HEARTBEAT':
                 return
+            
+            
 
             if tag and 'log_level' not in record:
                 tag_parts = tag.split('.')

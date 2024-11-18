@@ -107,6 +107,25 @@ class LogQueryTUI:
             print(f"Error getting all service logs: {str(e)}")
             return []
         
+    def get_registration_logs(self):
+        try:
+            body = {
+                "query": {
+                    "match": {
+                        "message_type": "REGISTRATION"
+                    }
+                },
+                "sort": [{"timestamp": {"order": "desc"}}],
+                "size": 100
+            }
+
+            results = self.es.search(index=self.index_pattern, body=body)
+            return results.body['hits']['hits']
+        except Exception as e:
+            print(f"Error getting registration logs: {str(e)}")
+            return []
+
+        
 
     def get_service_logs(self, service):
         try:
@@ -147,6 +166,8 @@ class LogQueryTUI:
             print(f"Error getting service errors: {str(e)}")
             return []
 
+    
+
     def display_menu(self):
         print("\nFitness Log Query")
         print("-" * 80)
@@ -155,6 +176,7 @@ class LogQueryTUI:
         print("3. List Available Indices")
         print("4. Exit")
         print("5- Get all logs")
+        print("6. View Registration Logs")
         print("-" * 80)
 
     def wait_for_input(self):
@@ -194,6 +216,12 @@ class LogQueryTUI:
                 self.clear_screen()
                 all_service_logs = self.get_all_service_logs()
                 self.display_logs(all_service_logs)
+                self.wait_for_input()
+
+            if choice == '6':
+                self.clear_screen()
+                registration_logs = self.get_registration_logs()
+                self.display_logs(registration_logs)
                 self.wait_for_input()
 
             else:

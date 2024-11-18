@@ -94,10 +94,34 @@ class ServiceMonitor:
                                 "message": f"Service {service_name} is down",
                                 "downtime_seconds": time_since_heartbeat
                             }
-                            
+
+                            node_registry = {
+                                "message_type": "REGISTRATION",
+                                "log_level": "DOWN",
+                                "node_id": info['node_id'],
+                                "service_name": service_name,
+                                "status": "DOWN",
+                                "message": f"Service {service_name} is down",
+                                "timestamp": datetime.now().isoformat()
+                                
+
+                            }
+                            """
+                            {
+    "message_type":"REGISTRATION",
+    "node_id": "<node-id>",
+    "service_name": "<ServiceName>",
+    "status": "UP/DOWN",
+    "timestamp": "<timestamp>"
+}"""
                             try:
                                 self.es.index(index=f"fitness-logs-{datetime.now():%Y.%m.%d}", 
                                             document=alert_doc)
+                             
+
+                                self.es.index(index=f"fitness-logs-{datetime.now():%Y.%m.%d}", 
+                                            document=node_registry)
+                                
                             except Exception as e:
                                 print(f"Error storing alert: {e}")
                     else:
